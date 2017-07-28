@@ -189,15 +189,14 @@ describe('China UnionPay', function() {
   var generate = function(start, stop) {
                     var array = [];
                     for (var i = start; i <= stop; i++) {
-                      array.push(i);
+                      array.push(String(i));
                     }
                     return array;
   };
-  var lengths = generate(16, 19);
+  var lengths = [16, 17, 18, 19];
   var prefixes = generate(622126, 622925)
                .concat(generate(624, 626))
                .concat(generate(6282, 6288));
-  prefixes = prefixes.map((el) => String(el));
 
   for (let prefix of prefixes) {
     for (let length of lengths) {
