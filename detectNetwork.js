@@ -15,16 +15,21 @@ var detectNetwork = function(cardNumber) {
   // Once you've read this, go ahead and try to implement this function, then return to the console.
   var network = '';
   var networkNames = ['DinersClub', 'AmericanExpress', 'Switch', 'Visa', 'Maestro', 'MasterCard', 'Discover', 'UnionPay'];
-  var DinersClub = {length: [14],
-                    prefix: ['38', '39']};
-  var AmericanExpress = {length: [15],
-              prefix: ['34', '37']};
-  var Switch = {length: [16, 18, 19],
-                prefix: ['4903', '4905', '4911', '4936', '564182', '633110', '6333', '6759']};
-  var Visa = {length: [13, 16, 19],
-              prefix: ['4']};
-  var Maestro = {length: [],
-                 prefix: ['5018', '5020', '5038', '6304'],
+  var DinersClub = {lengths: [14],
+                    prefixes: ['38', '39'],
+                    name: 'Diner\'s Club'};
+  var AmericanExpress = {lengths: [15],
+                         prefixes: ['34', '37'],
+                         name: 'American Express'};
+  var Switch = {lengths: [16, 18, 19],
+                prefixes: ['4903', '4905', '4911', '4936', '564182', '633110', '6333', '6759'],
+                name: 'Switch'};
+  var Visa = {lengths: [13, 16, 19],
+              prefixes: ['4'],
+              name: 'Visa'};
+  var Maestro = {lengths: [],
+                 prefixes: ['5018', '5020', '5038', '6304'],
+                 name: 'Maestro',
                  init: function(){
                     var generate = function(start, stop) {
                                     var array = [];
@@ -33,15 +38,18 @@ var detectNetwork = function(cardNumber) {
                                     }
                                     return array;
                     };
-                    this.length = generate(12, 19);
+                    this.lengths = generate(12, 19);
                     return this;
                  }}.init();
-  var MasterCard = {length: [16],
-                    prefix: ['51', '52', '53', '54', '55']};
-  var Discover = {length: [16, 19],
-                 prefix: ['6011', '644', '645', '646', '647', '648', '649', '65']};
-  var UnionPay = {length: [],
-                  prefix: [],
+  var MasterCard = {lengths: [16],
+                    prefixes: ['51', '52', '53', '54', '55'],
+                    name: 'MasterCard'};
+  var Discover = {lengths: [16, 19],
+                  prefixes: ['6011', '644', '645', '646', '647', '648', '649', '65'],
+                  name: 'Discover'};
+  var UnionPay = {lengths: [],
+                  prefixes: [],
+                  name: 'China UnionPay',
                   init: function() {
                     var generate = function(start, stop) {
                                       var array = [];
@@ -50,21 +58,21 @@ var detectNetwork = function(cardNumber) {
                                       }
                                       return array;
                     };
-                    this.length = generate(16, 19);
-
-                    this.prefix = generate(622126, 622925)
+                    this.lengths = generate(16, 19);
+                    this.prefixes = generate(622126, 622925)
                                   .concat(generate(624, 626))
                                   .concat(generate(6282, 6288));
                     return this;
                   }}.init();
 
   for (var name of networkNames) {
-    for (var prefix of eval(name)['prefix']) {
+    name = eval(name);
+    for (var prefix of name.prefixes) {
       if (cardNumber.indexOf(prefix) === 0) {
-        if (carNumber.length === eval(name)['length']) {
-          network = name;
+        if (name.lengths.indexOf(cardNumber.length) > -1) {
+          network = name.name;
+          break;
         }
-        break;
       }
     }
     if (network) {
@@ -72,7 +80,7 @@ var detectNetwork = function(cardNumber) {
     }
   }
   if (!network) {
-    network = 'unkown';
+    network = 'UNKOWN';
   }
   return network;
 };
