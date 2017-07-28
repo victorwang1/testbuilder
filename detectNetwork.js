@@ -14,49 +14,61 @@ var detectNetwork = function(cardNumber) {
 
   // Once you've read this, go ahead and try to implement this function, then return to the console.
   var network = '';
-  var initDigits = cardNumber.slice(0, 2);
-  var DinersClub = ['38', '39'];
-  var Amex = ['34', '37'];
-  var Master = ['51', '52', '53', '54', '55']
-  var Discover = ['6011', '644', '645', '646', '647', '648', '649', '65']
-  var Maestro = ['5018', '5020', '5038', '6304'];
+  var networkNames = ['DinersClub', 'AmericanExpress', 'Switch', 'Visa', 'Maestro', 'MasterCard', 'Discover', 'UnionPay'];
+  var DinersClub = {length: [14],
+                    prefix: ['38', '39']};
+  var AmericanExpress = {length: [15],
+              prefix: ['34', '37']};
+  var Switch = {length: [16, 18, 19],
+                prefix: ['4903', '4905', '4911', '4936', '564182', '633110', '6333', '6759']};
+  var Visa = {length: [13, 16, 19],
+              prefix: ['4']};
+  var Maestro = {length: [],
+                 prefix: ['5018', '5020', '5038', '6304'],
+                 init: function(){
+                    var generate = function(start, stop) {
+                                    var array = [];
+                                    for (var i = start; i <= stop; i++) {
+                                      array.push(i);
+                                    }
+                                    return array;
+                    };
+                    this.length = generate(12, 19);
+                    return this;
+                 }}.init();
+  var MasterCard = {length: [16],
+                    prefix: ['51', '52', '53', '54', '55']};
+  var Discover = {length: [16, 19],
+                 prefix: ['6011', '644', '645', '646', '647', '648', '649', '65']};
+  var UnionPay = {length: [],
+                  prefix: [],
+                  init: function() {
+                    var generate = function(start, stop) {
+                                      var array = [];
+                                      for (var i = start; i <= stop; i++) {
+                                        array.push(i);
+                                      }
+                                      return array;
+                    };
+                    this.length = generate(16, 19);
 
-  if (cardNumber.length === 13) {
-    if (cardNumber[0] === '4') {
-      network = "Visa";
+                    this.prefix = generate(622126, 622925)
+                                  .concat(generate(624, 626))
+                                  .concat(generate(6282, 6288));
+                    return this;
+                  }}.init();
+
+  for (var name of networkNames) {
+    for (var prefix of eval(name)['prefix']) {
+      if (cardNumber.indexOf(prefix) === 0) {
+        if (carNumber.length === eval(name)['length']) {
+          network = name;
+        }
+        break;
+      }
     }
-  } else if (cardNumber.length === 14) {
-    if (DinersClub.indexOf(initDigits) > -1) {
-      network = "Diner's Club";
-    }
-  } else if (cardNumber.length === 15) {
-    if (Amex.indexOf(initDigits) > -1) {
-      network = "American Express";
-    }
-  } else if (cardNumber.length === 16) {
-    if (cardNumber[0] === '4') {
-      network = "Visa";
-    } else if (Master.indexOf(initDigits) > -1) {
-      network = "MasterCard";
-    } else if (initDigits === '65' || cardNumber.slice(0, 4) === '6011'){
-      network = "Discover";
-    } else if (Discover.indexOf(cardNumber.slice(0, 3)) > -1) {
-      network = "Discover";
-    }
-  } else if (cardNumber.length === 19) {
-    if (cardNumber[0] === '4') {
-      network = "Visa";
-    } else if (initDigits === '65' || cardNumber.slice(0, 4) === '6011'){
-      network = "Discover";
-    } else if (Discover.indexOf(cardNumber.slice(0, 3)) > -1) {
-      network = "Discover";
-    }
-  }
-  if (cardNumber.length >= 12 || cardNumber.length <= 19) {
-    var firstFour = cardNumber.slice(0, 4);
-    var firstFive = cardNumber.slice(0, 5);
-    if (Maestro.indexOf(initDigits) > -1) {
-      network = "Maestro";
+    if (network) {
+      break;
     }
   }
   if (!network) {
